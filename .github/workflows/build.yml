@@ -9,41 +9,27 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout code
+      - name: Check out git repository
         uses: actions/checkout@v4
       
-      - name: Set up JDK
+      - name: Setup Java Env
         uses: actions/setup-java@v4
         with:
+          distribution: 'microsoft'
           java-version: '17'
-          distribution: 'temurin'
+          cache: gradle
       
       - name: Setup Android SDK
-        run: |
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          ls -la $ANDROID_HOME/
-      
-      - name: Setup Gradle
-        run: |
-          mkdir -p gradle/wrapper
-          echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
-          echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-          echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
-          echo "networkTimeout=10000" >> gradle/wrapper/gradle-wrapper.properties
-          echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
-          echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-          cat > gradlew << 'GRADLEW'
-#!/bin/sh
-APP_HOME=$( cd "${0%/*}" && pwd -P )
-exec java -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" "$@"
-GRADLEW
-          chmod +x gradlew
-          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.2/gradle-wrapper-8.2.jar
+        uses: android-actions/setup-android@v3
+        with:
+          sdk-version: '25'
+          ndk-version: '25.2.5000000'
       
       - name: Build debug APK
+        shell: bash
         run: ./gradlew assembleDebug --no-daemon
       
       - name: Upload APK
