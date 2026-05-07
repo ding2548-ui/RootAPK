@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1a1a1a"
+    android:padding="16dp">
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CVE Root"
+        android:textSize="32sp"
+        android:textColor="#00ff00"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingTop="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CVE-2026-31431 提权工具"
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:gravity="center"
+        android:paddingBottom="16dp"/>
+
+    <!-- 设备信息 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#2a2a2a"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="检测中..."
+            android:textColor="#aaaaaa"
+            android:textSize="12sp"
+            android:fontFamily="monospace"/>
+    </LinearLayout>
+
+    <!-- 状态显示区 -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#0a0a0a"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp">
+        
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#00ff00"
+            android:textSize="11sp"
+            android:fontFamily="monospace"
+            android:gravity="top|left"/>
+    </ScrollView>
+
+    <!-- 按钮区 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnRoot"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="开始提权"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="#cc0000"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCheck"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="检测漏洞"
+                android:textSize="14sp"
+                android:background="#333333"
+                android:textColor="#ffffff"
+                android:layout_marginEnd="5dp"/>
+
+            <Button
+                android:id="@+id/btnShell"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Root Shell"
+                android:textSize="14sp"
+                android:background="#006600"
+                android:textColor="#ffffff"
+                android:layout_marginStart="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 底部提示 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚠️ 仅供安全研究使用"
+        android:textSize="10sp"
+        android:textColor="#ff6600"
+        android:gravity="center"
+        android:paddingTop="12dp"/>
+
+</LinearLayout>
