@@ -12,34 +12,41 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+      
       - name: Setup Android SDK path
-        run: echo "sdk.dir=/opt/android-sdk" > local.properties
-      - name: Build
+        run: |
+          echo "sdk.dir=/opt/android-sdk" > local.properties
+      
+      - name: Setup Gradle wrapper
         run: |
           mkdir -p gradle/wrapper
-          echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
-          echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-          echo "distributionUrl=https://services.gradle.org/distributions/gradle-8.2-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
-          echo "networkTimeout=10000" >> gradle/wrapper/gradle-wrapper.properties
-          echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
-          echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
           
-          cat > gradlew << 'EOF'
+          cat > gradle/wrapper/gradle-wrapper.properties << 'GRADLE_PROPS'
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https://services.gradle.org/distributions/gradle-8.2-bin.zip
+networkTimeout=10000
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+GRADLE_PROPS
+          
+          cat > gradlew << 'GRADLEW'
 #!/bin/sh
 APP_HOME=$( cd "${0%/*}" && pwd -P )
 exec java -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" "$@"
-EOF
+GRADLEW
           chmod +x gradlew
           
-          echo "Downloading gradle wrapper..."
           curl -fsSL -o gradle/wrapper/gradle-wrapper.jar https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.2/gradle-wrapper-8.2.jar
-          
-          echo "Starting build..."
-          ./gradlew assembleDebug --no-daemon
+      
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+      
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
