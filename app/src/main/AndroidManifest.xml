@@ -2,20 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.exploit.root"
     android:versionCode="1"
-    android:versionName="1.0"
-    android:sharedUserId="android.uid.system">
+    android:versionName="1.0">
 
-    <!-- 系统权限 -->
+    <!-- 普通权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    
-    <!-- 关键系统权限 -->
-    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <application
         android:allowBackup="false"
@@ -25,7 +17,6 @@
         android:hasCode="true"
         android:debuggable="true">
 
-        <!-- 主界面 -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -37,7 +28,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Boot Receiver -->
         <receiver
             android:name=".BootReceiver"
             android:exported="false">
