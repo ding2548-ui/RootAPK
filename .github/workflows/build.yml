@@ -7,73 +7,42 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-env:
-  JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
-  ANDROID_HOME: /opt/android-sdk
-  ANDROID_SDK_ROOT: /opt/android-sdk
-
 jobs:
   build:
     runs-on: ubuntu-24.04
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    
-    - name: Setup Android SDK
-      run: |
-        if [ -d "/opt/android-sdk" ]; then
-          echo "Using preinstalled Android SDK"
-          ls -la /opt/android-sdk/
-          echo "sdk.dir=/opt/android-sdk" > $GITHUB_WORKSPACE/local.properties
-        else
-          mkdir -p /opt/android-sdk
-          echo "sdk.dir=/opt/android-sdk" > $GITHUB_WORKSPACE/local.properties
-        fi
-        echo "ANDROID_HOME=$ANDROID_HOME"
-        echo "JAVA_HOME=$JAVA_HOME"
-        cat $GITHUB_WORKSPACE/local.properties
-    
-    - name: Build debug APK
-      run: |
-        # Create gradle wrapper if needed
-        mkdir -p gradle/wrapper
-        
-        # Create gradle wrapper properties
-        cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
-networkTimeout=10000
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-EOF
-        
-        # Create gradlew script
-        cat > gradlew << 'GRADLEW_SCRIPT'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Android SDK path
+        run: echo "sdk.dir=/opt/android-sdk" > local.properties
+      - name: Build
+        run: |
+          mkdir -p gradle/wrapper
+          echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
+          echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+          echo "distributionUrl=https://services.gradle.org/distributions/gradle-8.2-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+          echo "networkTimeout=10000" >> gradle/wrapper/gradle-wrapper.properties
+          echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
+          echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+          
+          cat > gradlew << 'EOF'
 #!/bin/sh
-set -e
 APP_HOME=$( cd "${0%/*}" && pwd -P )
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
-JAVACMD=${JAVA_HOME:+$JAVA_HOME/bin/}java
-exec "$JAVACMD" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
-GRADLEW_SCRIPT
-        chmod +x gradlew
-        
-        # Build APK
-        ./gradlew assembleDebug --no-daemon
-      env:
-        JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
-    
-    - name: Upload APK
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+exec java -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" "$@"
+EOF
+          chmod +x gradlew
+          
+          echo "Downloading gradle wrapper..."
+          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.2/gradle-wrapper-8.2.jar
+          
+          echo "Starting build..."
+          ./gradlew assembleDebug --no-daemon
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
