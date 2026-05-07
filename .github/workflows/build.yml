@@ -28,15 +28,26 @@ jobs:
           sdk-version: '25'
           ndk-version: '25.2.5000000'
       
+      - name: Setup Gradle
+        shell: bash
+        run: |
+          if ! command -v gradle &> /dev/null; then
+            wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip -O /tmp/gradle.zip
+            unzip -q -o /tmp/gradle.zip -d /opt/
+            rm /tmp/gradle.zip
+            echo "GRADLE_HOME=/opt/gradle-8.2" >> $GITHUB_ENV
+            echo "/opt/gradle-8.2/bin" >> $GITHUB_PATH
+          fi
+          gradle --version
+      
       - name: Build debug APK
         shell: bash
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
       
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
+          name: debug-apkm
           path: app/build/outputs/apk/debug/app-debug.apk
